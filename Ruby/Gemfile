@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+gem 'coveralls', require: false
+
+group :test do
+  gem 'capybara'
+  gem 'rspec'
+  gem 'rspec-core'
+  gem 'rubocop'
+  gem 'rubocop-performance'
+  gem 'simplecov', require: false
+  gem 'simplecov-console', require: false
+end
