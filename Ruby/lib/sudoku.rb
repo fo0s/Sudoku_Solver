@@ -25,7 +25,7 @@ class Sudoku
     # Number crunching using brute force
     if number == 0
       (1..9).each do |brute_number|
-        if valid_in_row_and_column?(row, col, brute_number)
+        if is_valid?(row, col, brute_number)
           @initial_input[row][col] = brute_number
           calculate(row, col + 1)
         end
@@ -38,6 +38,10 @@ class Sudoku
     end
   end
 
+  def is_valid?(row, col, brute_number)
+    valid_in_row_and_column?(row, col, brute_number) && valid_in_block?(row, col, brute_number)
+  end
+
   def valid_in_row_and_column?(row, col, brute_number)
     (0..8).each do |index|
       # Compare with other value on the same row
@@ -48,6 +52,28 @@ class Sudoku
 
     true
   end
+
+  def valid_in_block?(row, col, brute_number)
+    # Assign areas for the blocks
+    block_row = assign_block(row)
+    block_col = assign_block(col)
+
+    block_row.each do |b_row|
+      block_col.each do |b_col|
+        # Compare with other value in the same block
+        return false if @initial_input[b_row][b_col] == brute_number and row != b_row and col != b_col
+      end
+    end
+
+    true
+  end
+
+  def assign_block(id)
+    [(0..2), (3..5), (6..8)].each do |values|
+      return values if values.include?(id)
+    end
+  end
+  
 end
 
 # Run program
