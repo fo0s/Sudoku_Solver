@@ -1,92 +1,98 @@
-# Main sudoku solver class
-
 class Sudoku
-  attr_reader :output, :initial_input
+  attr_reader :solved
 
-  def initialize
-    @output = []
-  end
-
-  def to_solve(input)
-    # Error checking
-    false if !input.is_a?(Array) 
-
-    # Continue
+  def initialize(input)
     @initial_input = input
+    @solved = []
   end
 
-  def calculate(row, col)
-    solve = @initial_input[row, col]
+  def is_valid?(x, y, z)
+    valid_in_row_and_column?(x, y, z) && valid_in_block?(x, y, z)
+  end
 
-    # Go to the next row when it reaches the end of the previous row.
-    row += 1 and col = 0 if col == 9
-    number = @initial_input[row][col]
+  def valid_in_row_and_column?(x, y, z)
+    (0..8).each do |i|
+      return false if @initial_input[x][i] == z && y != i
+      return false if @initial_input[i][y] == z && x != i
+    end
+    true
+  end
 
-    # Number crunching using brute force
-    if number == 0
-      (1..9).each do |brute_number|
-        if is_valid?(row, col, brute_number)
-          @initial_input[row][col] = brute_number
-          calculate(row, col + 1)
+  def valid_in_block?(x, y, z)
+    # Assign areas for the blocks
+    block_x = block(x)
+    block_y = block(y)
+
+    block_x.each do |a|
+      block_y.each do |b|
+        # Compare with other value in the same block
+        return false if @initial_input[a][b] == z && x != a and y != b
+      end
+    end
+
+    true
+  end
+
+  def block(id)
+    [(0..2), (3..5), (6..8)].each do |i|
+      return i if i.include?(id)
+    end
+  end
+
+def calculate(x, y)
+   # print when solved
+   if (x == 8 && y == 9)
+     (0..8).each { |i| @solved << @initial_input[i].clone }
+     return
+   end
+
+    # move to next row.
+    x += 1 and y = 0 if y == 9
+
+    value = @initial_input[x][y]
+
+    if value == 0
+      (1..9).each do |z|
+        if is_valid?(x, y, z)
+          @initial_input[x][y] = z
+          calculate(x, y + 1)
         end
       end
 
-      # If not right change back to original
-      @initial_input[row][col] = 0
+      # if nothing found set back to original
+      @initial_input[x][y] = 0
     else
-      calculate(row, col + 1)
+      calculate(x, y + 1)
     end
   end
-
-  def is_valid?(row, col, brute_number)
-    valid_in_row_and_column?(row, col, brute_number) && valid_in_block?(row, col, brute_number)
-  end
-
-  def valid_in_row_and_column?(row, col, brute_number)
-    (0..8).each do |index|
-      # Compare with other value on the same row
-      return false if @initial_input[row][index] == brute_number && col != index
-      # Compare with other value on the same column
-      return false if @initial_input[index][col] == brute_number && row != index
-    end
-
-    true
-  end
-
-  def valid_in_block?(row, col, brute_number)
-    # Assign areas for the blocks
-    block_row = assign_block(row)
-    block_col = assign_block(col)
-
-    block_row.each do |b_row|
-      block_col.each do |b_col|
-        # Compare with other value in the same block
-        return false if @initial_input[b_row][b_col] == brute_number and row != b_row and col != b_col
-      end
-    end
-
-    true
-  end
-
-  def assign_block(id)
-    [(0..2), (3..5), (6..8)].each do |values|
-      return values if values.include?(id)
-    end
-  end
-  
 end
 
-# Run program
-@valid_input = [[9, 3, 7, 1, 6, 8, 5, 2, 4],
-                [0, 4, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 3, 0, 0, 0, 7, 0],
-                [7, 2, 0, 0, 5, 0, 8, 0, 0],
-                [0, 0, 4, 0, 0, 0, 6, 0, 0],
-                [8, 0, 0, 0, 0, 9, 2, 0, 0],
-                [0, 0, 0, 0, 2, 0, 0, 0, 0],
-                [5, 0, 1, 0, 0, 0, 0, 0, 0],
-                ]
 
-game = Sudoku.new
-game.to_solve(@valid_input)
+
+# Run program
+initial_input = [
+  [5, 3, 0, 0, 7, 8, 0, 0, 0],
+  [6, 0, 0, 1, 9, 5, 0, 0, 0],
+  [0, 9, 8, 0, 0, 0, 0, 6, 0],
+  [8, 0, 0, 0, 6, 0, 0, 0, 3],
+  [4, 0, 0, 8, 0, 3, 0, 0, 1],
+  [7, 0, 0, 0, 2, 0, 0, 0, 6],
+  [0, 6, 0, 0, 0, 0, 2, 8, 0],
+  [0, 0, 0, 4, 1, 9, 0, 0, 5],
+  [0, 0, 0, 0, 8, 0, 0, 7, 9],
+]
+
+game = Sudoku.new(initial_input)
 game.calculate(0, 0)
+p game.solved
+
+# Expected output;
+# [ [5, 3, 4, 6, 7, 8, 9, 1, 2], 
+#   [6, 7, 2, 1, 9, 5, 3, 4, 8], 
+#   [1, 9, 8, 3, 4, 2, 5, 6, 7], 
+#   [8, 5, 9, 7, 6, 1, 4, 2, 3], 
+#   [4, 2, 6, 8, 5, 3, 7, 9, 1], 
+#   [7, 1, 3, 9, 2, 4, 8, 5, 6], 
+#   [9, 6, 1, 5, 3, 7, 2, 8, 4], 
+#   [2, 8, 7, 4, 1, 9, 6, 3, 5], 
+#   [3, 4, 5, 2, 8, 6, 1, 7, 9] ]
