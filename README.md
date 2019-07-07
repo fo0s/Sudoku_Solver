@@ -5,8 +5,10 @@
 ## Ruby
 
 [Attempt 1](Ruby/lib/attempt1.rb)
-> Using the classic brute force method.
+> The classic brute force with backtrace method.
 
+This fully takes advantage of Ruby's multi-thread
+capabilities to speed things up otherwise it wold take forever.
 The program starts at the first square and works it's
 way down the row. If the number is not 0 it skips it.
 If it is 0, it starts placing a range of numbers of
