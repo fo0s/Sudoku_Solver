@@ -2,7 +2,7 @@
 
 > My attempt at solving Sudoku puzzles using different languages
 
-### Ruby
+## Ruby
 
 [Attempt 1](Ruby/lib/attempt1.rb)
 > Using the classic brute force method.
