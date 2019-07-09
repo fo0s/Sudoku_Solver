@@ -1,6 +1,4 @@
 import random
-from pprint import pprint
-
 
 def sudoku(game, x=0, y=0):
     available_numbers = list(range(1, 10))
@@ -44,8 +42,24 @@ def has_duplicates_in_column(game, x):
     return len(column) != len(set(column))
 
 
-def has_duplicates(grid, x, y):
-    return (has_duplicates_in_column(grid, x) or has_duplicates_in_row(grid, y))
+def has_duplicates_in_box(game, x, y):
+    start_x = x // 3 * 3
+    start_y = y // 3 * 3
+
+    box = []
+
+    for i in range(start_y, start_y + 3):
+        for j in range(start_x, start_x + 3):
+            if game[i][j] != 0:
+                box.append(game[i][j])
+
+    return len(box) != len(set(box))
+
+
+def has_duplicates(game, x, y):
+    return (has_duplicates_in_column(game, x)
+            or has_duplicates_in_row(game, y)
+            or has_duplicates_in_box(game, x, y))
 
 
 def main():
