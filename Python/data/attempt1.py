@@ -15,7 +15,7 @@ def sudoku(game, x=0, y=0):
 
         game[y][x] = chosen_number
 
-        if has_duplicates_in_row(game, y):
+        if has_duplicates(game, x, y):
             continue
 
         if x == 8:
@@ -36,6 +36,16 @@ def has_duplicates_in_row(game, y):
     row = [game[y][x] for x in range(9) if game[y][x] != 0]
 
     return len(row) != len(set(row))
+
+
+def has_duplicates_in_column(game, x):
+    column = [game[y][x] for y in range(9) if game[y][x] != 0]
+
+    return len(column) != len(set(column))
+
+
+def has_duplicates(grid, x, y):
+    return (has_duplicates_in_column(grid, x) or has_duplicates_in_row(grid, y))
 
 
 def main():
