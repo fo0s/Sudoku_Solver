@@ -19,3 +19,9 @@ There is a lot of backtracking using this method which
 makes it an ineffective solution for this problem.
 
 ![ruby brute force demo](Ruby/images/brute.gif)
+
+## Python
+
+[Attempt 1](Python/data/attempt1.py)
+> Using the same method as the ruby solution
+
